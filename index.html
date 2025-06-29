@@ -10,11 +10,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: "Cyber Katana" - A dark, tech-focused palette with a sharp accent. Background: #111827 (gray-900), Text: #d1d5db (gray-300), Primary Accent: #3b82f6 (blue-500), Secondary Accent/Cards: #1f2937 (gray-800). -->
-    <!-- Application Structure Plan: A single-page, vertical-scrolling layout with a fixed sidebar navigation for non-linear exploration. The structure is thematic: 1. Hero, 2. Philosophy, 3. Architecture (with an interactive chart), 4. Aesthetics, 5. User Experience, 6. Interactive Roadmap (timeline), 7. Resources. This task-oriented structure allows users to quickly jump to the information they need (e.g., "What's the tech stack?" or "What's the development status?") rather than being forced to read linearly, enhancing usability and engagement. -->
+    <!-- Application Structure Plan: A single-page, vertical-scrolling layout with a fixed sidebar navigation for non-linear exploration. The structure is thematic: 1. Hero, 2. Philosophy, 3. Architecture, 4. Aesthetics, 5. User Experience, 6. AI-Powered Tools (New), 7. Interactive Roadmap, 8. Resources. This structure allows users to explore core concepts and then engage with interactive, AI-driven tools that add practical value. -->
     <!-- Visualization & Content Choices: 
-        - Report Info: Development Plan -> Goal: Show progress over time -> Viz/Method: Interactive HTML/CSS vertical timeline -> Interaction: Click phase to expand details -> Justification: More engaging and less cluttered than a static list, visually communicates project flow -> Library/Method: Vanilla JS.
-        - Report Info: DE/WM Recommendations -> Goal: Compare technical options -> Viz/Method: Chart.js Horizontal Bar Chart -> Interaction: Tooltips on hover provide details -> Justification: Provides a quick, visual comparison of abstract qualities (Minimalism vs. Modernity), which is more effective than text alone -> Library/Method: Chart.js.
-        - Report Info: Core Philosophy -> Goal: Inform and establish brand identity -> Viz/Method: Icon-driven info cards in a grid -> Interaction: Subtle hover animations -> Justification: Breaks up text, making key principles scannable and memorable -> Library/Method: Tailwind CSS.
+        - Report Info: Development Plan -> Goal: Show progress over time -> Viz/Method: Interactive HTML/CSS vertical timeline -> Interaction: Click phase to expand details -> Justification: Engaging and visually communicates project flow -> Library/Method: Vanilla JS.
+        - Report Info: DE/WM Recommendations -> Goal: Compare technical options -> Viz/Method: Chart.js Horizontal Bar Chart -> Interaction: Tooltips on hover provide details -> Justification: Quick, visual comparison of abstract qualities -> Library/Method: Chart.js.
+        - New Feature: AI Package Suggester -> Goal: Provide users with custom software lists -> Viz/Method: Text input + button + formatted text output area -> Interaction: User types a role, clicks generate, Gemini API call is made, results are displayed. -> Justification: Adds a practical, AI-driven utility that aligns with the OS's target audience -> Library/Method: Gemini API via fetch.
+        - New Feature: AI Script Generator -> Goal: Help users with automation -> Viz/Method: Text input + button + formatted code output area -> Interaction: User describes a task, clicks generate, Gemini API call is made, script is displayed. -> Justification: Highly useful tool for developers and power users, showcasing OS capabilities. -> Library/Method: Gemini API via fetch.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -49,9 +50,49 @@
             height: 350px;
             max-height: 50vh;
         }
+        .gemini-output {
+            background-color: #0d121c;
+            border: 1px solid #374151;
+        }
+        .loader {
+            border: 4px solid #374151;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 <body class="w-full">
+    <!-- Modal for Loading/Error Messages -->
+    <div id="loading-modal" class="modal">
+        <div class="flex flex-col items-center justify-center bg-gray-800 p-8 rounded-lg shadow-xl">
+            <div id="modal-content">
+                <div class="loader"></div>
+                <p id="modal-text" class="mt-4 text-white">Generating...</p>
+            </div>
+            <button id="close-modal-btn" class="hidden mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Close</button>
+        </div>
+    </div>
+
 
     <div class="flex">
         <!-- Sidebar Navigation -->
@@ -62,6 +103,7 @@
                 <a href="#architecture" class="nav-link p-2 pl-4 text-gray-400">Architecture</a>
                 <a href="#aesthetics" class="nav-link p-2 pl-4 text-gray-400">Aesthetics</a>
                 <a href="#experience" class="nav-link p-2 pl-4 text-gray-400">User Experience</a>
+                <a href="#ai-tools" class="nav-link p-2 pl-4 text-gray-400">AI Tools</a>
                 <a href="#roadmap" class="nav-link p-2 pl-4 text-gray-400">Development Plan</a>
                 <a href="#resources" class="nav-link p-2 pl-4 text-gray-400">Resources</a>
             </nav>
@@ -176,6 +218,37 @@
                     </div>
                 </section>
 
+                <!-- Section: AI Tools -->
+                <section id="ai-tools" class="mb-24 scroll-mt-20">
+                    <h2 class="text-4xl font-bold text-white mb-4">AI-Powered Tools</h2>
+                    <p class="text-lg text-gray-400 mb-8">
+                        Leverage the power of AI to enhance your Katana OS experience. These tools, powered by the Gemini API, provide intelligent suggestions and generate useful scripts to streamline your workflow.
+                    </p>
+                    <div class="space-y-12">
+                        <!-- Package Bundle Suggester -->
+                        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                            <h3 class="text-2xl font-bold text-white mb-2">Package Bundle Suggester</h3>
+                            <p class="text-gray-400 mb-4">Describe a role or task (e.g., "Web Development", "Video Editing"), and get a curated list of software packages.</p>
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <input id="package-prompt" type="text" placeholder="e.g., 'Penetration Testing'" class="flex-grow bg-gray-900 border border-gray-600 rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <button id="generate-packages-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition-colors">✨ Generate Bundle</button>
+                            </div>
+                            <div id="package-result" class="gemini-output mt-4 p-4 rounded-md min-h-[100px] whitespace-pre-wrap font-mono"></div>
+                        </div>
+
+                        <!-- Script Sensei -->
+                         <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                            <h3 class="text-2xl font-bold text-white mb-2">Script Sensei</h3>
+                            <p class="text-gray-400 mb-4">Describe a task in plain English, and get a ready-to-use bash script.</p>
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <input id="script-prompt" type="text" placeholder="e.g., 'Backup my Documents folder'" class="flex-grow bg-gray-900 border border-gray-600 rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <button id="generate-script-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition-colors">✨ Generate Script</button>
+                            </div>
+                            <div id="script-result" class="gemini-output mt-4 p-4 rounded-md min-h-[100px] whitespace-pre-wrap font-mono"></div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Section: Roadmap -->
                 <section id="roadmap" class="mb-24 scroll-mt-20">
                     <h2 class="text-4xl font-bold text-white mb-4">Development Plan</h2>
@@ -183,7 +256,6 @@
                        This interactive timeline outlines the phased development plan for Katana OS. Click on each phase to reveal the specific goals and tasks, tracking our progress from initial concept to public release.
                     </p>
                     <div id="timeline-container" class="relative border-l-2 border-blue-500 ml-4 py-4">
-                        
                         <div class="mb-8 pl-8 relative timeline-item">
                             <div class="absolute -left-[11px] top-1 w-5 h-5 bg-blue-500 rounded-full border-4 border-gray-900"></div>
                             <h3 class="text-2xl font-bold text-white cursor-pointer" data-target="phase-1">Phase 1: The Forge</h3>
@@ -197,7 +269,6 @@
                                  </ul>
                             </div>
                         </div>
-
                         <div class="mb-8 pl-8 relative timeline-item">
                              <div class="absolute -left-[11px] top-1 w-5 h-5 bg-blue-500 rounded-full border-4 border-gray-900"></div>
                             <h3 class="text-2xl font-bold text-white cursor-pointer" data-target="phase-2">Phase 2: The Quench</h3>
@@ -211,7 +282,6 @@
                                  </ul>
                             </div>
                         </div>
-
                         <div class="mb-8 pl-8 relative timeline-item">
                             <div class="absolute -left-[11px] top-1 w-5 h-5 bg-blue-500 rounded-full border-4 border-gray-900"></div>
                             <h3 class="text-2xl font-bold text-white cursor-pointer" data-target="phase-3">Phase 3: The Polish</h3>
@@ -225,7 +295,6 @@
                                  </ul>
                             </div>
                         </div>
-
                         <div class="pl-8 relative timeline-item">
                            <div class="absolute -left-[11px] top-1 w-5 h-5 bg-blue-500 rounded-full border-4 border-gray-900"></div>
                             <h3 class="text-2xl font-bold text-white cursor-pointer" data-target="phase-4">Phase 4: The Unsheathing</h3>
@@ -270,6 +339,28 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('loading-modal');
+            const modalContent = document.getElementById('modal-content');
+            const modalText = document.getElementById('modal-text');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            
+            const showModal = (text = 'Generating...') => {
+                modal.style.display = 'flex';
+                modalContent.innerHTML = `<div class="loader"></div><p class="mt-4 text-white">${text}</p>`;
+                closeModalBtn.classList.add('hidden');
+            };
+
+            const showModalError = (text = 'An error occurred.') => {
+                modal.style.display = 'flex';
+                modalContent.innerHTML = `<p class="text-red-400">${text}</p>`;
+                closeModalBtn.classList.remove('hidden');
+            };
+
+            const hideModal = () => {
+                modal.style.display = 'none';
+            };
+            
+            closeModalBtn.addEventListener('click', hideModal);
 
             // Sidebar Navigation Active State
             const sections = document.querySelectorAll('section');
@@ -335,46 +426,99 @@
                         indexAxis: 'y',
                         maintainAspectRatio: false,
                         responsive: true,
-                        scales: {
-                            x: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                },
-                                ticks: {
-                                    color: '#d1d5db'
-                                }
-                            },
-                            y: {
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    color: '#d1d5db',
-                                    font: {
-                                        size: 14,
-                                        weight: 'bold'
-                                    }
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: '#d1d5db'
-                                }
-                            },
-                            tooltip: {
-                                titleColor: '#ffffff',
-                                bodyColor: '#d1d5db',
-                                backgroundColor: '#1f2937',
-                                borderColor: '#3b82f6',
-                                borderWidth: 1,
-                            }
-                        }
+                        scales: { x: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#d1d5db' } }, y: { grid: { display: false }, ticks: { color: '#d1d5db', font: { size: 14, weight: 'bold' } } } },
+                        plugins: { legend: { labels: { color: '#d1d5db' } }, tooltip: { titleColor: '#ffffff', bodyColor: '#d1d5db', backgroundColor: '#1f2937', borderColor: '#3b82f6', borderWidth: 1 } }
                     }
                 });
             }
+            
+            // Gemini API Logic
+            const callGemini = async (prompt) => {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }] }]
+                };
+                
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API Error: ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        throw new Error("No content received from API.");
+                    }
+                } catch (error) {
+                    console.error("Gemini API call failed:", error);
+                    showModalError(error.message);
+                    return null;
+                }
+            };
+
+            const packageBtn = document.getElementById('generate-packages-btn');
+            const packagePromptInput = document.getElementById('package-prompt');
+            const packageResultDiv = document.getElementById('package-result');
+
+            packageBtn.addEventListener('click', async () => {
+                const userPrompt = packagePromptInput.value;
+                if (!userPrompt) {
+                    packageResultDiv.textContent = 'Please enter a role or task.';
+                    return;
+                }
+                
+                showModal('Generating Package Bundle...');
+                packageResultDiv.textContent = '';
+                
+                const fullPrompt = `You are an expert on Arch Linux packages. For a minimalist Arch-based OS called Katana OS, suggest a set of software packages for a "${userPrompt}" role. Provide a title for the bundle and then list the official Arch package names, one per line. Do not add any other commentary.`;
+                
+                const result = await callGemini(fullPrompt);
+                hideModal();
+
+                if (result) {
+                    packageResultDiv.textContent = result;
+                } else {
+                     packageResultDiv.textContent = 'Failed to generate package list. Please check console for details.';
+                }
+            });
+
+            const scriptBtn = document.getElementById('generate-script-btn');
+            const scriptPromptInput = document.getElementById('script-prompt');
+            const scriptResultDiv = document.getElementById('script-result');
+
+            scriptBtn.addEventListener('click', async () => {
+                const userPrompt = scriptPromptInput.value;
+                if (!userPrompt) {
+                    scriptResultDiv.textContent = 'Please describe the script you want.';
+                    return;
+                }
+
+                showModal('Generating Script...');
+                scriptResultDiv.textContent = '';
+
+                const fullPrompt = `You are a bash scripting expert. Write a clean, well-commented bash script for an Arch Linux system that accomplishes the following task: "${userPrompt}". The script should be robust and follow best practices. Provide only the complete script inside a single \`\`\`bash ... \`\`\` markdown block.`;
+                
+                const result = await callGemini(fullPrompt);
+                hideModal();
+
+                if (result) {
+                    // Clean up the result to remove markdown fences
+                    const cleanedResult = result.replace(/^```bash\n|```$/g, '');
+                    scriptResultDiv.textContent = cleanedResult;
+                } else {
+                    scriptResultDiv.textContent = 'Failed to generate script. Please check console for details.';
+                }
+            });
         });
     </script>
 </body>
