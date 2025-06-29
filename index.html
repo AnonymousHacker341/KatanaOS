@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katana OS - Interactive Roadmap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: "Cyber Katana" - A dark, tech-focused palette with a sharp accent. Background: #111827 (gray-900), Text: #d1d5db (gray-300), Primary Accent: #3b82f6 (blue-500), Secondary Accent/Cards: #1f2937 (gray-800). -->
+    <!-- Application Structure Plan: A single-page, vertical-scrolling layout with a fixed sidebar navigation for non-linear exploration. The structure is thematic: 1. Hero, 2. Philosophy, 3. Architecture (with an interactive chart), 4. Aesthetics, 5. User Experience, 6. Interactive Roadmap (timeline), 7. Resources. This task-oriented structure allows users to quickly jump to the information they need (e.g., "What's the tech stack?" or "What's the development status?") rather than being forced to read linearly, enhancing usability and engagement. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Development Plan -> Goal: Show progress over time -> Viz/Method: Interactive HTML/CSS vertical timeline -> Interaction: Click phase to expand details -> Justification: More engaging and less cluttered than a static list, visually communicates project flow -> Library/Method: Vanilla JS.
+        - Report Info: DE/WM Recommendations -> Goal: Compare technical options -> Viz/Method: Chart.js Horizontal Bar Chart -> Interaction: Tooltips on hover provide details -> Justification: Provides a quick, visual comparison of abstract qualities (Minimalism vs. Modernity), which is more effective than text alone -> Library/Method: Chart.js.
+        - Report Info: Core Philosophy -> Goal: Inform and establish brand identity -> Viz/Method: Icon-driven info cards in a grid -> Interaction: Subtle hover animations -> Justification: Breaks up text, making key principles scannable and memorable -> Library/Method: Tailwind CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827;
+            color: #d1d5db;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+            border-left: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+            transform: translateX(4px);
+        }
+        .timeline-item-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+    </style>
+</head>
+<body class="w-full">
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="hidden lg:block fixed top-0 left-0 h-screen w-64 bg-gray-900/70 backdrop-blur-sm p-8 border-r border-gray-700/50">
+            <h2 class="font-black text-2xl text-white tracking-widest uppercase">Katana OS</h2>
+            <nav id="nav-menu" class="mt-12 flex flex-col space-y-4">
+                <a href="#vision" class="nav-link p-2 pl-4 text-gray-400">The Vision</a>
+                <a href="#architecture" class="nav-link p-2 pl-4 text-gray-400">Architecture</a>
+                <a href="#aesthetics" class="nav-link p-2 pl-4 text-gray-400">Aesthetics</a>
+                <a href="#experience" class="nav-link p-2 pl-4 text-gray-400">User Experience</a>
+                <a href="#roadmap" class="nav-link p-2 pl-4 text-gray-400">Development Plan</a>
+                <a href="#resources" class="nav-link p-2 pl-4 text-gray-400">Resources</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="w-full lg:pl-64">
+            <div class="max-w-5xl mx-auto px-6 py-12 md:py-24">
+
+                <!-- Header -->
+                <header class="text-center mb-24">
+                    <h1 class="font-black text-5xl md:text-7xl text-white tracking-widest uppercase">KATANA OS</h1>
+                    <p class="mt-4 text-xl text-blue-400">Precision. Control. Speed.</p>
+                </header>
+
+                <!-- Section: The Vision -->
+                <section id="vision" class="mb-24 scroll-mt-20">
+                    <h2 class="text-4xl font-bold text-white mb-4">The Vision</h2>
+                    <p class="text-lg text-gray-400 mb-8">
+                        This section outlines the core philosophy of Katana OS. These principles guide every development decision, ensuring the operating system is not just a tool, but a carefully crafted experience for users who value efficiency and control.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+                            <h3 class="text-xl font-bold text-white mb-2">Precision & Control</h3>
+                            <p class="text-gray-400">Like a master swordsmith, every package and setting serves a purpose. No bloat. The user has full control over their system.</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+                            <h3 class="text-xl font-bold text-white mb-2">Minimalist Aesthetics</h3>
+                            <p class="text-gray-400">The design is clean, sharp, and unobtrusive. A dark theme with a single, sharp accent color defines the signature look.</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+                            <h3 class="text-xl font-bold text-white mb-2">Power & Speed</h3>
+                            <p class="text-gray-400">By keeping the base system light, Katana OS is fast and responsive, built for creators and developers who value efficiency.</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors">
+                            <h3 class="text-xl font-bold text-white mb-2">Modern & Bleeding-Edge</h3>
+                            <p class="text-gray-400">Leveraging Arch's rolling-release model, Katana OS will always have the latest stable software.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Architecture -->
+                <section id="architecture" class="mb-24 scroll-mt-20">
+                    <h2 class="text-4xl font-bold text-white mb-4">System Architecture</h2>
+                     <p class="text-lg text-gray-400 mb-8">
+                        This section breaks down the technical foundation of Katana OS. Explore the core components, from the base system to the user interface, to understand how it's built for power and control. The chart below compares the recommended desktop environments based on their design philosophy.
+                    </p>
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-white mb-6 text-center">Core Components</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center mb-8">
+                            <div>
+                                <h4 class="text-lg font-bold text-blue-400">Base System</h4>
+                                <p class="font-mono text-white">Arch Linux</p>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-blue-400">Installer</h4>
+                                <p class="font-mono text-white">Calamares</p>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-blue-400">Build Tool</h4>
+                                <p class="font-mono text-white">Archiso</p>
+                            </div>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4 text-center">Desktop Environment Comparison</h4>
+                        <div class="chart-container h-[300px] md:h-[350px]">
+                            <canvas id="wmChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Aesthetics -->
+                <section id="aesthetics" class="mb-24 scroll-mt-20">
+                    <h2 class="text-4xl font-bold text-white mb-4">Aesthetics</h2>
+                    <p class="text-lg text-gray-400 mb-8">
+                        The visual identity of Katana OS is designed to be as sharp and focused as its performance. This section provides a glimpse into the theme, typography, and overall look that create a cohesive and immersive user experience.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-2">Theme & Icons</h3>
+                            <p class="text-gray-400">A dark, clean GTK/QT theme paired with a modern icon set like Papirus forms the visual foundation.</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-2">Typography</h3>
+                            <p class="text-gray-400">Crisp, legible fonts are crucial. We use <span class="font-mono text-blue-400">JetBrains Mono</span> for terminals and <span class="text-blue-400">Inter</span> for the UI.</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                             <h3 class="text-xl font-bold text-white mb-2">Wallpapers</h3>
+                             <p class="text-gray-400">A curated collection of high-quality, minimalist wallpapers that reflect the "Katana" theme of precision and elegance.</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                             <h3 class="text-xl font-bold text-white mb-2">Boot Splash</h3>
+                             <p class="text-gray-400">A custom Plymouth boot animation provides a professional polish from the very first moment.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: User Experience -->
+                <section id="experience" class="mb-24 scroll-mt-20">
+                    <h2 class="text-4xl font-bold text-white mb-4">User Experience</h2>
+                    <p class="text-lg text-gray-400 mb-8">
+                        From installation to first use, the user experience is designed to be seamless and empowering. We focus on providing powerful tools that are easy to access, ensuring users feel in command of their system from day one.
+                    </p>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-2">Streamlined Installation</h3>
+                            <p class="text-gray-400">Using the <span class="font-mono text-blue-400">Calamares</span> framework, the installation process is simple, fast, and graphical, removing the traditional barriers of setting up an Arch-based system.</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-2">Welcome Application</h3>
+                            <p class="text-gray-400">On first boot, a helpful welcome app guides the user through initial setup, such as updating mirrors, installing drivers, and discovering key software.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Roadmap -->
+                <section id="roadmap" class="mb-24 scroll-mt-20">
+                    <h2 class="text-4xl font-bold text-white mb-4">Development Plan</h2>
+                    <p class="text-lg text-gray-400 mb-8">
+                       This interactive timeline outlines the phased development plan for Katana OS. Click on each phase to reveal the specific goals and tasks, tracking our progress from initial concept to public release.
+                    </p>
+                    <div id="timeline-container" class="relative border-l-2 border-blue-500 ml-4 py-4">
+                        
+                        <div class="mb-8 pl-8 relative timeline-item">
+                            <div class="absolute -left-[11px] top-1 w-5 h-5 bg-blue-500 rounded-full border-4 border-gray-900"></div>
+                            <h3 class="text-2xl font-bold text-white cursor-pointer" data-target="phase-1">Phase 1: The Forge</h3>
+                            <p class="text-gray-500">Research & Prototyping</p>
+                            <div id="phase-1" class="timeline-item-content text-gray-400 mt-4 pr-4">
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li>Install base Arch Linux on a VM.</li>
+                                    <li>Manually configure chosen Window Manager (Hyprland/Sway/i3).</li>
+                                    <li>Experiment with themes, icons, and software to define the look and feel.</li>
+                                    <li>Write shell scripts to automate all customization steps.</li>
+                                 </ul>
+                            </div>
+                        </div>
+
+                        <div class="mb-8 pl-8 relative timeline-item">
+                             <div class="absolute -left-[11px] top-1 w-5 h-5 bg-blue-500 rounded-full border-4 border-gray-900"></div>
+                            <h3 class="text-2xl font-bold text-white cursor-pointer" data-target="phase-2">Phase 2: The Quench</h3>
+                            <p class="text-gray-500">Building the ISO</p>
+                             <div id="phase-2" class="timeline-item-content text-gray-400 mt-4 pr-4">
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li>Learn and master the `archiso` build tool.</li>
+                                    <li>Create a custom `archiso` profile for Katana OS.</li>
+                                    <li>Integrate custom packages, dotfiles, themes, and wallpapers.</li>
+                                    <li>Build and test the first bootable .iso file.</li>
+                                 </ul>
+                            </div>
+                        </div>
+
+                        <div class="mb-8 pl-8 relative timeline-item">
+                            <div class="absolute -left-[11px] top-1 w-5 h-5 bg-blue-500 rounded-full border-4 border-gray-900"></div>
+                            <h3 class="text-2xl font-bold text-white cursor-pointer" data-target="phase-3">Phase 3: The Polish</h3>
+                            <p class="text-gray-500">The Installer</p>
+                            <div id="phase-3" class="timeline-item-content text-gray-400 mt-4 pr-4">
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li>Integrate the Calamares installer into the `archiso` build.</li>
+                                    <li>Configure Calamares with custom branding and slides.</li>
+                                    <li>Develop package installation modules and user setup scripts.</li>
+                                    <li>Thoroughly test the end-to-end installation process.</li>
+                                 </ul>
+                            </div>
+                        </div>
+
+                        <div class="pl-8 relative timeline-item">
+                           <div class="absolute -left-[11px] top-1 w-5 h-5 bg-blue-500 rounded-full border-4 border-gray-900"></div>
+                            <h3 class="text-2xl font-bold text-white cursor-pointer" data-target="phase-4">Phase 4: The Unsheathing</h3>
+                            <p class="text-gray-500">Community & Release</p>
+                            <div id="phase-4" class="timeline-item-content text-gray-400 mt-4 pr-4">
+                               <ul class="list-disc list-inside space-y-2">
+                                    <li>Create a GitHub repository for the `archiso` profile and tools.</li>
+                                    <li>Set up a project landing page and documentation site.</li>
+                                    <li>Release Katana OS 1.0.</li>
+                                    <li>Gather community feedback for future development cycles.</li>
+                                 </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                 <!-- Section: Resources -->
+                <section id="resources" class="scroll-mt-20">
+                    <h2 class="text-4xl font-bold text-white mb-4">Resources & Tools</h2>
+                    <p class="text-lg text-gray-400 mb-8">
+                        The development of Katana OS stands on the shoulders of giants. This section provides links to the essential documentation and tools that make this project possible. These are invaluable resources for anyone looking to contribute or learn more.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <a href="https://wiki.archlinux.org/title/Main_page" target="_blank" class="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors block text-center">
+                            <h3 class="text-xl font-bold text-white">Arch Wiki</h3>
+                            <p class="text-blue-400 mt-2">The ultimate resource.</p>
+                        </a>
+                        <a href="https://wiki.archlinux.org/title/Archiso" target="_blank" class="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors block text-center">
+                            <h3 class="text-xl font-bold text-white">Archiso Docs</h3>
+                            <p class="text-blue-400 mt-2">For building the ISO.</p>
+                        </a>
+                        <a href="https://calamares.io/" target="_blank" class="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors block text-center">
+                            <h3 class="text-xl font-bold text-white">Calamares</h3>
+                             <p class="text-blue-400 mt-2">The installer framework.</p>
+                        </a>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Sidebar Navigation Active State
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('#nav-menu a');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-30% 0px -70% 0px' });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            // Timeline interaction
+            const timelineContainer = document.getElementById('timeline-container');
+            if(timelineContainer){
+                timelineContainer.addEventListener('click', (e) => {
+                    if (e.target.dataset.target) {
+                        const targetId = e.target.dataset.target;
+                        const contentEl = document.getElementById(targetId);
+                        if (contentEl) {
+                           if (contentEl.style.maxHeight && contentEl.style.maxHeight !== '0px') {
+                                contentEl.style.maxHeight = '0px';
+                           } else {
+                                contentEl.style.maxHeight = contentEl.scrollHeight + 'px';
+                           }
+                        }
+                    }
+                });
+            }
+
+            // WM Chart
+            const ctx = document.getElementById('wmChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Hyprland', 'Sway', 'i3'],
+                        datasets: [{
+                            label: 'Modernity / Features',
+                            data: [9, 7, 5],
+                            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        }, {
+                            label: 'Lightweight / Minimalism',
+                            data: [7, 8, 9],
+                            backgroundColor: 'rgba(96, 165, 250, 0.5)',
+                            borderColor: 'rgba(96, 165, 250, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        maintainAspectRatio: false,
+                        responsive: true,
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#d1d5db'
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#d1d5db',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#d1d5db'
+                                }
+                            },
+                            tooltip: {
+                                titleColor: '#ffffff',
+                                bodyColor: '#d1d5db',
+                                backgroundColor: '#1f2937',
+                                borderColor: '#3b82f6',
+                                borderWidth: 1,
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
